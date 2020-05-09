@@ -13,9 +13,6 @@ import javax.inject.Inject;
 @Component
 public class MachineRequestConverter {
 
-    @Inject
-    private UserService userService;
-
     public Machine convert(MachineRequest request){
 
         Machine machine = new Machine();

@@ -1,6 +1,8 @@
 package com.machine.monitor.api.domain.machine;
 
 
+import com.machine.monitor.api.application.MessageConstants;
+import com.machine.monitor.api.application.exception.UnprocessableEntityException;
 import com.machine.monitor.api.domain.user.User;
 import com.machine.monitor.api.domain.useracess.UserAcess;
 import lombok.Data;
@@ -49,20 +51,6 @@ public class Machine implements Serializable {
             orphanRemoval = true,
             fetch = FetchType.EAGER)
     private Set<UserAcess> users = new HashSet<>();
-
-    public void addUser(User user, boolean isUserAdmin) {
-
-        UserAcess userAcess = new UserAcess(user, this, isUserAdmin);
-        users.add(userAcess);
-        user.getMachines().add(userAcess);
-    }
-
-    public void removeAdminUser() {
-
-        this.users.stream()
-                .filter(userAcess -> userAcess.isUserAdmin())
-                .forEach(userAcess -> userAcess.setUserAdmin(false));
-    }
 
     public User getMachineAdminUser(){
 

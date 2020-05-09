@@ -17,14 +17,18 @@ import java.util.Optional;
 
 @Service
 public class MachineService {
-	
-	@Inject
-	MachineRepository machineRepository;
 
-	@Inject
-	MachineEventLogRepository machineEventLogRepository;
+	private MachineRepository machineRepository;
+	private MachineEventLogRepository machineEventLogRepository;
 
 	Logger logger = LoggerFactory.getLogger(MachineService.class);
+
+	public MachineService(MachineRepository machineRepository,
+						  MachineEventLogRepository machineEventLogRepository){
+
+		this.machineRepository = machineRepository;
+		this.machineEventLogRepository = machineEventLogRepository;
+	}
 
 	public Machine findMachineById(Long id){
 
@@ -68,20 +72,6 @@ public class MachineService {
 		}
 	}
 
-	private Date getLastDownTime(Machine machine){
-
-		if(machine.getId() == null){
-			return null;
-		}
-
-		Optional<Machine> machineOptional = machineRepository.findById(machine.getId());
-		if(!machineOptional.isPresent()){
-			return null;
-		}
-
-		return machineOptional.get().getLastDownTime();
-	}
-
 	public MachineEventLog registerNewMachineEvent(Machine machine){
 
 		try {
@@ -106,5 +96,19 @@ public class MachineService {
 			throw new PersistenceException(String.format(MessageConstants.MESSAGE_ERROR_PERSISTING_MACHINE_EVENT_LOG,
 					machine.getName()));
 		}
+	}
+
+	private Date getLastDownTime(Machine machine){
+
+		if(machine.getId() == null){
+			return null;
+		}
+
+		Optional<Machine> machineOptional = machineRepository.findById(machine.getId());
+		if(!machineOptional.isPresent()){
+			return null;
+		}
+
+		return machineOptional.get().getLastDownTime();
 	}
 }

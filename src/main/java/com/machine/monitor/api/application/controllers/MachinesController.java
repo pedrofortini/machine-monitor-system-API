@@ -22,17 +22,21 @@ import java.util.List;
 @RestController
 public class MachinesController implements MachinesApi {
 
-	@Inject
 	private MachineService machineService;
-
-	@Inject
 	private MachineEventLogService eventLogService;
-
-	@Inject
 	private MachineRequestConverter requestConverter;
-
-	@Inject
 	private MachineResponseConverter responseConverter;
+
+	public MachinesController(MachineService machineService,
+							  MachineEventLogService eventLogService,
+							  MachineRequestConverter requestConverter,
+							  MachineResponseConverter responseConverter){
+
+		this.machineService = machineService;
+		this.eventLogService = eventLogService;
+		this.requestConverter = requestConverter;
+		this.responseConverter = responseConverter;
+	}
 
 	@Override
 	public ResponseEntity<MachineDetailResponse> getMachineById(@PathVariable("id") Long id) {

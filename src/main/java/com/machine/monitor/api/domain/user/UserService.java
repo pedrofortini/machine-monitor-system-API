@@ -17,11 +17,15 @@ import java.util.Optional;
 
 @Service
 public class UserService {
-	
-	@Inject
+
 	UserRepository userRepository;
 
-	Logger logger = LoggerFactory.getLogger(MachineService.class);
+	Logger logger = LoggerFactory.getLogger(UserService.class);
+
+	public UserService(UserRepository userRepository){
+
+		this.userRepository = userRepository;
+	}
 
 	public User saveUser(User user){
 

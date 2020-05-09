@@ -25,10 +25,8 @@ public class UserServiceTest {
     @Before
     public void setUp() {
 
-        this.service = new UserService();
         this.userRepository = PowerMockito.mock(UserRepository.class);
-
-        Whitebox.setInternalState(service, "userRepository", userRepository);
+        this.service = new UserService(this.userRepository);
     }
 
     @Test

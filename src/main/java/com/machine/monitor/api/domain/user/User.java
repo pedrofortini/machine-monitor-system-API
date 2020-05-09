@@ -34,7 +34,7 @@ public class User implements Serializable {
     private String name;
 
     @OneToMany(
-            mappedBy = "post",
+            mappedBy = "user",
             cascade = CascadeType.ALL,
             orphanRemoval = true,
             fetch = FetchType.EAGER

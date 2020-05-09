@@ -11,8 +11,12 @@ import java.util.Optional;
 @Service
 public class MachineEventLogService {
 
-    @Inject
     private MachineEventLogRepository repository;
+
+    public MachineEventLogService(MachineEventLogRepository repository){
+
+        this.repository = repository;
+    }
 
     public List<MachineEventLog> findEventsOfMachine(Machine machine){
 

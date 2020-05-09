@@ -28,12 +28,10 @@ public class MachineServiceTest {
     @Before
     public void setUp() {
 
-        this.service = new MachineService();
         this.machineRepository = PowerMockito.mock(MachineRepository.class);
         this.machineEventLogRepository = PowerMockito.mock(MachineEventLogRepository.class);
 
-        Whitebox.setInternalState(service, "machineRepository", machineRepository);
-        Whitebox.setInternalState(service, "machineEventLogRepository", machineEventLogRepository);
+        this.service = new MachineService(this.machineRepository, this.machineEventLogRepository);
     }
 
     @Test
@@ -95,6 +93,60 @@ public class MachineServiceTest {
         Machine savedMachine = service.saveMachine(machine);
         assertThat(savedMachine.isMachineIsUp()).isFalse();
         assertThat(savedMachine.getLastDownTime()).isBeforeOrEqualsTo(new Date());
+    }
+
+    @Test
+    public void shouldReturnMachineWithLastDowntimeSetIfMachineExistsAndItsNotDown(){
+
+        Machine machine = new Machine();
+        machine.setMachineIsUp(true);
+        machine.setLastDownTime(new Date());
+        machine.setId(1L);
+
+        Mockito.when(machineRepository.findById(Mockito.eq(1L)))
+                .thenReturn(Optional.of(machine));
+
+        Mockito.when(machineRepository.save(Mockito.any(Machine.class)))
+                .thenAnswer(i -> i.getArguments()[0]);
+
+        Machine savedMachine = service.saveMachine(machine);
+        assertThat(savedMachine.isMachineIsUp()).isTrue();
+        assertThat(savedMachine.getLastDownTime()).isBeforeOrEqualsTo(new Date());
+    }
+
+    @Test
+    public void shouldReturnMachineWithLastDowntimeNullIfMachineIdDoesntExists(){
+
+        Machine machine = new Machine();
+        machine.setMachineIsUp(true);
+        machine.setLastDownTime(new Date());
+        machine.setId(null);
+
+        Mockito.when(machineRepository.save(Mockito.any(Machine.class)))
+                .thenAnswer(i -> i.getArguments()[0]);
+
+        Machine savedMachine = service.saveMachine(machine);
+        assertThat(savedMachine.isMachineIsUp()).isTrue();
+        assertThat(savedMachine.getLastDownTime()).isNull();
+    }
+
+    @Test
+    public void shouldReturnMachineWithLastDowntimeNullIfMachineDoesntExists(){
+
+        Machine machine = new Machine();
+        machine.setMachineIsUp(true);
+        machine.setLastDownTime(new Date());
+        machine.setId(1L);
+
+        Mockito.when(machineRepository.findById(Mockito.eq(1L)))
+                .thenReturn(Optional.empty());
+
+        Mockito.when(machineRepository.save(Mockito.any(Machine.class)))
+                .thenAnswer(i -> i.getArguments()[0]);
+
+        Machine savedMachine = service.saveMachine(machine);
+        assertThat(savedMachine.isMachineIsUp()).isTrue();
+        assertThat(savedMachine.getLastDownTime()).isNull();
     }
 
     @Test

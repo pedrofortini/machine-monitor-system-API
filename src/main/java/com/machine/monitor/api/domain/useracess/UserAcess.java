@@ -19,11 +19,11 @@ public class UserAcess {
     @EmbeddedId
     private UserAcessId id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @MapsId("userLogin")
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @MapsId("machineId")
     private Machine machine;
 
@@ -46,12 +46,12 @@ public class UserAcess {
             return false;
 
         UserAcess that = (UserAcess) o;
-        return Objects.equals(user, that.user) &&
-                Objects.equals(machine, that.machine);
+        return Objects.equals(machine, that.machine) &&
+                Objects.equals(user, that.user);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(user, machine);
+        return Objects.hash(machine, user);
     }
 }

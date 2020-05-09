@@ -13,6 +13,8 @@ tags:
     description: Operations regarding the machines being monitored
   - name: User
     description: Operations regarding the users that acess the machines
+  - name: UserAcess
+    description: Operations regarding the acess of users to machines
 schemes:
   - http
 paths:
@@ -100,7 +102,7 @@ paths:
           description: "User that is being saved"
           required: true
           schema:
-            $ref: '#/definitions/UserTemplate'
+            $ref: '#/definitions/UserRequest'
       responses:
         '200':
           description: User data suscessfully saved
@@ -124,7 +126,7 @@ paths:
           schema:
             type: "array"
             items:
-              $ref: "#/definitions/UserTemplate"
+              $ref: "#/definitions/UserResponse"
         '500':
           description: "Internal error ocurred while getting User data"
         '400':
@@ -151,16 +153,16 @@ paths:
         200:
           description: "Successful operation"
           schema:
-            $ref: "#/definitions/UserTemplate"
+            $ref: "#/definitions/UserResponse"
         400:
           description: "Invalid ID supplied"
         404:
           description: "User not found"
 
   /users/acess/request:
-    post:
+    put:
       tags:
-        - User
+        - UserAcess
       summary: Requests a user to have acess to certain machine
       operationId: saveUserAcessRequest
       consumes:
@@ -181,6 +183,33 @@ paths:
           description: Invalid User Request Provided
         '409':
           description: Acess already granted
+
+    delete:
+      tags:
+        - UserAcess
+      summary: Revokes the acess of a user to a certain machine
+      operationId: deleteUserAcessRequest
+      parameters:
+        - name: machineId
+          in: header
+          description: "Id of the machine"
+          required: true
+          type: "integer"
+          format: "int64"
+        - name: userLogin
+          in: header
+          required: true
+          type: string
+          description: "Login of the user"
+      responses:
+        '204':
+          description: Acess of user to machine sucessfully revoked
+        '500':
+          description: Internal error ocurred while deleting acess
+        '400':
+          description: Invalid Request Provided
+        '404':
+          description: Acess doesn't exists
 
 definitions:
   MachineRequest:
@@ -285,7 +314,7 @@ definitions:
         description: Timestamp of the event
         minLength: 1
 
-  UserTemplate:
+  UserRequest:
     type: object
     required:
       - login
@@ -299,6 +328,27 @@ definitions:
         type: string
         description: Name of the Machine
         minLength: 1
+
+  UserResponse:
+    type: object
+    required:
+      - login
+      - name
+    properties:
+      login:
+        type: string
+        description: Name of the Machine
+        minLength: 1
+      name:
+        type: string
+        description: Name of the Machine
+        minLength: 1
+      machines_acess:
+        type: array
+        description: List of machine names the user have acess
+        items:
+          type: string
+        uniqueItems: true
 
   UserAcessRequest:
     type: object

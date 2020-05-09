@@ -1,7 +1,7 @@
 package com.machine.monitor.api.domain.user.converter;
 
 import com.machine.monitor.api.domain.user.User;
-import io.swagger.model.UserTemplate;
+import io.swagger.model.UserResponse;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -10,17 +10,19 @@ import java.util.stream.Collectors;
 @Component
 public class UserResponseConverter {
 
-    public List<UserTemplate> convertUserList(List<User> users){
+    public List<UserResponse> convertUserList(List<User> users){
 
         return users.stream().map(u -> convert(u)).collect(Collectors.toList());
     }
 
-    public UserTemplate convert(User user){
+    public UserResponse convert(User user){
 
-        UserTemplate userTemplate = new UserTemplate();
+        UserResponse userTemplate = new UserResponse();
         userTemplate.setLogin(user.getLogin());
         userTemplate.setName(user.getName());
-        userTemplate.setUserIsAdmin(user.isUserIsAdmin());
+
+        List<String> machinesAcess = user.getMachines().stream().map(m -> m.getMachine().getName()).collect(Collectors.toList());
+        userTemplate.setMachinesAcess(machinesAcess);
 
         return userTemplate;
     }
