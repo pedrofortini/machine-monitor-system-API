@@ -1,10 +1,9 @@
 # Machine Monitor System
 
 Application responsible for monitoring the usage of a group of computers, recording any downtime of the machines.
-The system also manages the creation of machines and users, and granting users acess to the machines.
+The system also manages the creation of machines and users, and granting and revoking users acess to the machines.
 
-This repository holds both Frontend (in the app folder) and Backend (in the src folder) of the application. The Backend
-REST API was constructed using the **SpringBoot** framework, and the Frontend using the **React.js** library.  
+The REST API was constructed using the **SpringBoot** framework.  
 
 ## Getting started
 
@@ -15,8 +14,6 @@ of the following applications:
 
 - [Java 8](https://www.java.com/pt_BR/download/)
 - [Maven](https://maven.apache.org/)
-- [Node.js](https://nodejs.org/en/)
-- [Yarn](https://yarnpkg.com/)
 
 ### Building
 
@@ -26,9 +23,19 @@ Maven is used to build the backend SpringBoot API, running the following command
 
 ### Testing 
 
-The SpringBoot API was tested using JUnit, to execute the tests run:
+Both Unit and Integration tests were written for the SpringBoot backend API. Running integrated tests of SpringBoot 
+applications requires loading the entire Spring context, which slows down the process of running these tests. 
+Thus, separate ways of executing unit and integrated tests were created. 
+
+Unit tests were made using JUnit, to run them use the command:
 
 `mvn test`
+
+The Integrated Tests were built using the TestRestTemplate abstraction, which allows to emulate the execution of REST 
+requests to the API, allowing the creation of tests that validate all application layers. 
+To run the unit and integrated tests use the command:
+
+`mvn integration-test`
 
 ### Running 
 
@@ -39,35 +46,29 @@ To run the backend SpringBoot API, run:
 The Backend API endpoints were generated and documented using [Swagger](https://swagger.io/). The swagger documentation
 is located on `/src/main/resources/swagger.yaml`, use [Swagger Editor](https://editor.swagger.io/) to visualize it.
 
-To run the React.js client, enter the app folder and run:
-
-`yarn add bootstrap@4.1.3 react-cookie@3.0.4 react-router-dom@4.3.1 reactstrap@6.5.0`
-
-`yarn start`
-
-You can acess the application in a web browser via the URL `http://localhost:3000`. Following Figure shows the Home 
-page of the application. 
-
-![alt text](./src/main/resources/machine_monitor_home.png "MachineMonitor")
-
 ## Definitions
+
+### Database Design
 
 The following figure is the ER Diagram for the system.
 
 ![alt text](./src/main/resources/ER_Diagram.png "ER-Diagram")
 
-The system manages two Entities: Machines and Users. Each machine have only one Admin User (One To Many relationship),
-an User can be the Admin User of 0 or more machines. Every time the state of a machine (Running or Down) changes, this
-event is recorded in the Machine Event Log Entity. The machine also keeps track of it's last downtime. A user can 
-have acess to 0 or more machines, and machines have 1 or more Users who can acess them, this succumbs to a Many To Many 
-relationship, maintained in the user_acess table.
+The system manages two Entities: Machines and Users. A user can have acess to 0 or more machines, and machines have 1 or 
+more Users who can acess them, this succumbs to a Many To Many relationship, maintained in the user_acess table. The 
+user_acess table also stores if the user is the admin user of the machine, each machine has only one admin user, and a user
+can be the admin user of 0 or more machines. Every time the state of a machine (Running or Down) changes, this event is 
+recorded in the Machine Event Log Entity. The machine also keeps track of it's last downtime. 
 
+### Backend API Design
 
-## Usage
+The Backend API exposes the following endpoints:
 
-The application have three main menus:
-
-- **Manage Users**: Displays the data of registered users. Allows the creation/editing of user data.
-- **Manage Machines**: Displays the data of registered machines. Allows the creation/editing of machine data. Displays 
-the users who have access to the machine, and the list of machine events.
-- **Manage User Acess to Machines**: Allows the creation of users acess requests to machines.
+- PUT ​/machines => Creates or edits data of a machine.
+- GET ​/machines => Gets monitoring data from all machines.
+- GET /machines​/{id} => Find machine data by ID.
+- PUT ​/users => Creates a user of a machine.
+- GET /users => Gets data from all the Users.
+- GET /users​/{login} => Find User data by Login.
+- PUT /users​/acess​/request => Requests a user to have acess to certain machine.
+- DELETE ​/users​/acess​/request => Revokes the acess of a user to a certain machine.
